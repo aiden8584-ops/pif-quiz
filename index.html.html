@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>과잉 관광 개념 확인 퀴즈 — PIF 영어학원</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #f5f6f8;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+  header {
+    background: #1a3a6b;
+    color: #fff;
+    padding: 1rem 1.25rem .85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  header .title { font-size: 15px; font-weight: 600; letter-spacing: -.02em; }
+  header .sub { font-size: 11px; opacity: .65; margin-top: 3px; }
+  header .badge {
+    font-size: 10px; background: rgba(255,255,255,.18);
+    border-radius: 20px; padding: 3px 9px; white-space: nowrap;
+  }
+  .progress-bar-wrap { background: #d0d8e8; height: 4px; }
+  .progress-bar { background: #3a8ef6; height: 4px; width: 0%; transition: width .3s; }
+  .section-label {
+    font-size: 10px; font-weight: 600; letter-spacing: .07em;
+    text-transform: uppercase; color: #6b7a99;
+    padding: .9rem 1.1rem .4rem;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 .85rem .65rem;
+    padding: .85rem 1rem;
+    border: 1px solid #e8eaf0;
+    font-size: 13.5px;
+    line-height: 2;
+    color: #1a1a1a;
+  }
+  .card.blue-tint { background: #eef4ff; border-color: #b8cff5; }
+  .card.green-tint { background: #edfaf2; border-color: #9ddcba; }
+  .card.red-tint { background: #fff1ee; border-color: #f5b8a8; }
+  .card-head { font-size: 10px; font-weight: 600; color: #6b7a99; margin-bottom: .35rem; letter-spacing:.04em; }
+  .card-head.blue { color: #1a3a6b; }
+  .card-head.green { color: #0d6640; }
+  .card-head.red { color: #922a10; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin: 0 .85rem .65rem; }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; border-radius: 50%;
+    background: #dce7fb; color: #1a3a6b;
+    font-size: 10px; font-weight: 700; margin-right: 4px;
+    vertical-align: middle; flex-shrink: 0;
+  }
+  .arrow { text-align: center; color: #aab2c8; font-size: 20px; padding: .1rem 0 .2rem; }
+
+  /* Blank button */
+  .bw { position: relative; display: inline-block; vertical-align: middle; }
+  .bb {
+    display: inline-block; min-width: 64px; padding: 1px 8px;
+    border-radius: 5px; border: 1.5px dashed #3a8ef6;
+    background: #eef4ff; color: #1a3a6b;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    text-align: center; user-select: none; transition: background .12s;
+    line-height: 1.7;
+  }
+  .bb:active { background: #d5e5ff; }
+  .bb.correct { border: 1.5px solid #1d9e75; background: #e1f5ee; color: #085041; cursor: default; }
+  .bb.wrong   { border: 1.5px solid #d85a30; background: #fff0ec; color: #922a10; cursor: default; }
+
+  /* Dropdown */
+  .dd {
+    display: none; position: absolute;
+    top: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+    background: #fff; border: 1px solid #d0d8e8;
+    border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.12);
+    z-index: 200; min-width: 120px; overflow: hidden;
+  }
+  .dd.open { display: block; }
+  .dd-opt {
+    padding: .6rem 1rem; font-size: 13px; color: #1a1a1a;
+    cursor: pointer; white-space: nowrap; border-bottom: .5px solid #f0f1f5;
+  }
+  .dd-opt:last-child { border-bottom: none; }
+  .dd-opt:active { background: #eef4ff; }
+
+  /* Bottom bar */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1px solid #e8eaf0;
+    padding: .75rem 1rem; display: flex; gap: .55rem; align-items: center;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+  }
+  .btn-check {
+    flex: 1; background: #1a3a6b; color: #fff;
+    border: none; border-radius: 10px; padding: .7rem;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .btn-check:active { background: #122a52; }
+  .btn-reset {
+    background: #f0f2f7; color: #4a5568;
+    border: none; border-radius: 10px; padding: .7rem 1rem;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+  }
+  .score-badge {
+    font-size: 13px; font-weight: 700; min-width: 52px; text-align: center;
+    color: #1a3a6b;
+  }
+  .score-badge.all { color: #0d6640; }
+  .score-badge.none { color: #922a10; }
+
+  /* Result overlay */
+  .result-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,30,60,.5); z-index: 300;
+    align-items: center; justify-content: center;
+  }
+  .result-overlay.show { display: flex; }
+  .result-box {
+    background: #fff; border-radius: 18px;
+    padding: 2rem 1.5rem; text-align: center;
+    width: 80vw; max-width: 320px;
+  }
+  .result-emoji { font-size: 48px; margin-bottom: .75rem; }
+  .result-score { font-size: 32px; font-weight: 700; color: #1a3a6b; margin-bottom: .4rem; }
+  .result-msg { font-size: 14px; color: #4a5568; margin-bottom: 1.25rem; line-height: 1.6; }
+  .result-close {
+    background: #1a3a6b; color: #fff; border: none;
+    border-radius: 10px; padding: .7rem 2rem;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+
+  /* Print QR section */
+  @media print {
+    .bottom-bar, .result-overlay { display: none !important; }
+    body { background: #fff; padding-bottom: 0; }
+    .qr-section { display: block !important; }
+  }
+  .qr-section {
+    display: none;
+    margin: 1rem .85rem 0;
+    background: #fff; border-radius: 12px;
+    border: 1px solid #e8eaf0;
+    padding: 1rem; text-align: center;
+  }
+
+  /* spacer for fixed bottom bar */
+  .spacer { height: 72px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="title">과잉 관광 개념 확인</div>
+    <div class="sub">PIF 영어학원 · 지문 내용 도식 퀴즈</div>
+  </div>
+  <div class="badge">빈칸 클릭 → 선택</div>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar" id="prog"></div></div>
+
+<!-- 핵심 전제 -->
+<div class="section-label">핵심 전제</div>
+<div class="card blue-tint">
+  <div class="card-head blue">❶❷ 관광학·사회과학의 공통 가정</div>
+  사람과 장소는 <span class="bw" id="w-b1"><span class="bb" id="b1" onclick="toggleDD('b1')">?</span>
+    <div class="dd" id="dd-b1">
+      <div class="dd-opt" onclick="pick('b1','명확하게 정의된',true)">명확하게 정의된</div>
+      <div class="dd-opt" onclick="pick('b1','감각적으로 느끼는',false)">감각적으로 느끼는</div>
+      <div class="dd-opt" onclick="pick('b1','유동적으로 변하는',false)">유동적으로 변하는</div>
+    </div>
+  </span> 것으로 간주된다
+</div>
+
+<!-- 사람 vs 장소 -->
+<div class="two-col">
+  <div class="card" style="margin:0">
+    <div class="card-head"><span class="num">❸</span>사람 (People)</div>
+    주인 또는 <span class="bw" id="w-b2"><span class="bb" id="b2" onclick="toggleDD('b2')">?</span>
+      <div class="dd" id="dd-b2">
+        <div class="dd-opt" onclick="pick('b2','손님',true)">손님</div>
+        <div class="dd-opt" onclick="pick('b2','여행사',false)">여행사</div>
+        <div class="dd-opt" onclick="pick('b2','정부',false)">정부</div>
+      </div>
+    </span> 역할<br>
+    경계가 <span class="bw" id="w-b3"><span class="bb" id="b3" onclick="toggleDD('b3')">?</span>
+      <div class="dd" id="dd-b3">
+        <div class="dd-opt" onclick="pick('b3','확실한',true)">확실한</div>
+        <div class="dd-opt" onclick="pick('b3','모호한',false)">모호한</div>
+        <div class="dd-opt" onclick="pick('b3','유연한',false)">유연한</div>
+      </div>
+    </span> 행위자
+  </div>
+  <div class="card" style="margin:0">
+    <div class="card-head"><span class="num">❹</span>장소 (Place)</div>
+    명확한 경계의 안정적인 <span class="bw" id="w-b4"><span class="bb" id="b4" onclick="toggleDD('b4')">?</span>
+      <div class="dd" id="dd-b4">
+        <div class="dd-opt" onclick="pick('b4','용기(容器)',true)">용기(容器)</div>
+        <div class="dd-opt" onclick="pick('b4','공간',false)">공간</div>
+        <div class="dd-opt" onclick="pick('b4','시스템',false)">시스템</div>
+      </div>
+    </span>로 취급
+  </div>
+</div>
+
+<!-- 귀결 -->
+<div class="arrow">↓</div>
+<div class="section-label">논리적 귀결</div>
+<div class="card">
+  <span class="num">❺</span>장소는 <span class="bw" id="w-b5"><span class="bb" id="b5" onclick="toggleDD('b5')">?</span>
+    <div class="dd" id="dd-b5">
+      <div class="dd-opt" onclick="pick('b5','관광객',true)">관광객</div>
+      <div class="dd-opt" onclick="pick('b5','상품',false)">상품</div>
+      <div class="dd-opt" onclick="pick('b5','자본',false)">자본</div>
+    </div>
+  </span>으로 가득 찰 수 있다<br>
+  → 따라서 <span class="bw" id="w-b6"><span class="bb" id="b6" onclick="toggleDD('b6')">?</span>
+    <div class="dd" id="dd-b6">
+      <div class="dd-opt" onclick="pick('b6','과잉 관광',true)">과잉 관광</div>
+      <div class="dd-opt" onclick="pick('b6','도시 집중',false)">도시 집중</div>
+      <div class="dd-opt" onclick="pick('b6','경제 불황',false)">경제 불황</div>
+    </div>
+  </span>으로 고통받을 수 있다
+</div>
+
+<!-- 비판적 검토 -->
+<div class="arrow">↓</div>
+<div class="section-label">비판적 검토 ❼–❿</div>
+<div class="two-col">
+  <div class="card green-tint" style="margin:0">
+    <div class="card-head green">단순한 경우 ❼❽</div>
+    실제로 <span class="bw" id="w-b7"><span class="bb" id="b7" onclick="toggleDD('b7')">?</span>
+      <div class="dd" id="dd-b7">
+        <div class="dd-opt" onclick="pick('b7','수용력',true)">수용력</div>
+        <div class="dd-opt" onclick="pick('b7','매력도',false)">매력도</div>
+        <div class="dd-opt" onclick="pick('b7','접근성',false)">접근성</div>
+      </div>
+    </span>이 제한된 특정 명소<br>
+    예: <span class="bw" id="w-b8"><span class="bb" id="b8" onclick="toggleDD('b8')">?</span>
+      <div class="dd" id="dd-b8">
+        <div class="dd-opt" onclick="pick('b8','에펠탑',true)">에펠탑</div>
+        <div class="dd-opt" onclick="pick('b8','베네치아',false)">베네치아</div>
+        <div class="dd-opt" onclick="pick('b8','바르셀로나',false)">바르셀로나</div>
+      </div>
+    </span>
+  </div>
+  <div class="card red-tint" style="margin:0">
+    <div class="card-head red">복잡한 경우 ❾❿</div>
+    도시·지역·국가 단위<br>
+    물리적 수용력 외에 <span class="bw" id="w-b9"><span class="bb" id="b9" onclick="toggleDD('b9')">?</span>
+      <div class="dd" id="dd-b9">
+        <div class="dd-opt" onclick="pick('b9','자연적 저하',true)">자연적 저하</div>
+        <div class="dd-opt" onclick="pick('b9','인구 증가',false)">인구 증가</div>
+        <div class="dd-opt" onclick="pick('b9','물가 상승',false)">물가 상승</div>
+      </div>
+    </span>·경제 유출 등
+  </div>
+</div>
+
+<div class="card" style="margin:.65rem .85rem 0">
+  <span class="num">❿</span>'과도하다'는 개념은 매우
+  <span class="bw" id="w-b10"><span class="bb" id="b10" onclick="toggleDD('b10')">?</span>
+    <div class="dd" id="dd-b10">
+      <div class="dd-opt" onclick="pick('b10','상대적',true)">상대적</div>
+      <div class="dd-opt" onclick="pick('b10','절대적',false)">절대적</div>
+      <div class="dd-opt" onclick="pick('b10','주관적',false)">주관적</div>
+    </div>
+  </span>인 개념이다
+</div>
+
+<div class="spacer"></div>
+
+<!-- QR Section (print only) -->
+<div class="qr-section" id="qrSection">
+  <p style="font-size:12px;color:#6b7a99;margin-bottom:.5rem">스마트폰으로 스캔하세요</p>
+  <div id="qrcode" style="display:inline-block"></div>
+  <p style="font-size:11px;color:#aab2c8;margin-top:.5rem">PIF 영어학원</p>
+</div>
+
+<!-- Bottom bar -->
+<div class="bottom-bar">
+  <button class="btn-check" onclick="checkAll()">정답 확인</button>
+  <button class="btn-reset" onclick="resetAll()">↺ 다시</button>
+  <div class="score-badge" id="scoreBadge"></div>
+</div>
+
+<!-- Result overlay -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-box">
+    <div class="result-emoji" id="rEmoji">🎉</div>
+    <div class="result-score" id="rScore"></div>
+    <div class="result-msg" id="rMsg"></div>
+    <button class="result-close" onclick="closeResult()">확인</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const TOTAL = 10;
+const state = {};
+
+function toggleDD(id) {
+  const btn = document.getElementById(id);
+  if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
+  const dd = document.getElementById('dd-' + id);
+  const isOpen = dd.classList.contains('open');
+  closeAll();
+  if (!isOpen) dd.classList.add('open');
+}
+
+function closeAll() {
+  document.querySelectorAll('.dd').forEach(d => d.classList.remove('open'));
+}
+
+function pick(id, val, correct) {
+  state[id] = correct;
+  const btn = document.getElementById(id);
+  btn.textContent = val;
+  btn.classList.remove('correct', 'wrong');
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  closeAll();
+  updateProgress();
+}
+
+function updateProgress() {
+  const filled = Object.keys(state).length;
+  document.getElementById('prog').style.width = (filled / TOTAL * 100) + '%';
+}
+
+function checkAll() {
+  const ids = ['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'];
+  const unanswered = ids.filter(id => state[id] === undefined);
+  if (unanswered.length > 0) {
+    const sb = document.getElementById('scoreBadge');
+    sb.textContent = `${unanswered.length}개 남음`;
+    sb.className = 'score-badge none';
+    return;
+  }
+  const correct = ids.filter(id => state[id] === true).length;
+  const overlay = document.getElementById('resultOverlay');
+  const msgs = [
+    ['😅','조금 더 읽어볼까요?','지문을 다시 한 번 꼼꼼히 읽어보세요!'],
+    ['🙂','잘 하고 있어요!','핵심 개념을 조금 더 다져봐요.'],
+    ['👍','훌륭해요!','거의 다 맞혔어요. 한 번 더 도전!'],
+    ['🎉','완벽해요!','모든 개념을 정확히 이해했어요!'],
+  ];
+  const idx = correct === TOTAL ? 3 : correct >= 8 ? 2 : correct >= 5 ? 1 : 0;
+  document.getElementById('rEmoji').textContent = msgs[idx][0];
+  document.getElementById('rScore').textContent = `${correct} / ${TOTAL}`;
+  document.getElementById('rMsg').textContent = msgs[idx][2];
+  overlay.classList.add('show');
+  const sb = document.getElementById('scoreBadge');
+  sb.textContent = `${correct}/${TOTAL}`;
+  sb.className = 'score-badge' + (correct === TOTAL ? ' all' : correct < 5 ? ' none' : '');
+}
+
+function closeResult() {
+  document.getElementById('resultOverlay').classList.remove('show');
+}
+
+function resetAll() {
+  Object.keys(state).forEach(k => delete state[k]);
+  document.querySelectorAll('.bb').forEach(btn => {
+    btn.textContent = '?';
+    btn.className = 'bb';
+  });
+  document.getElementById('scoreBadge').textContent = '';
+  document.getElementById('prog').style.width = '0%';
+  closeResult();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.bw')) closeAll();
+});
+
+// QR code generation pointing to this file's URL
+window.addEventListener('load', () => {
+  const url = window.location.href;
+  try {
+    new QRCode(document.getElementById('qrcode'), {
+      text: url,
+      width: 140, height: 140,
+      colorDark: '#1a3a6b', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {}
+});
+</script>
+</body>
+</html>
