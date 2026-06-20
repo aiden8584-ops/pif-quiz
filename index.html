@@ -3,395 +3,294 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>과잉 관광 개념 확인 퀴즈 — PIF 영어학원</title>
+<title>개념 확인 퀴즈 — PIF 영어학원</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-    background: #f5f6f8;
-    color: #1a1a1a;
-    min-height: 100vh;
-    padding-bottom: 2rem;
-  }
-  header {
-    background: #1a3a6b;
-    color: #fff;
-    padding: 1rem 1.25rem .85rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-  header .title { font-size: 15px; font-weight: 600; letter-spacing: -.02em; }
-  header .sub { font-size: 11px; opacity: .65; margin-top: 3px; }
-  header .badge {
-    font-size: 10px; background: rgba(255,255,255,.18);
-    border-radius: 20px; padding: 3px 9px; white-space: nowrap;
-  }
-  .progress-bar-wrap { background: #d0d8e8; height: 4px; }
-  .progress-bar { background: #3a8ef6; height: 4px; width: 0%; transition: width .3s; }
-  .section-label {
-    font-size: 10px; font-weight: 600; letter-spacing: .07em;
-    text-transform: uppercase; color: #6b7a99;
-    padding: .9rem 1.1rem .4rem;
-  }
-  .card {
-    background: #fff;
-    border-radius: 12px;
-    margin: 0 .85rem .65rem;
-    padding: .85rem 1rem;
-    border: 1px solid #e8eaf0;
-    font-size: 13.5px;
-    line-height: 2;
-    color: #1a1a1a;
-  }
-  .card.blue-tint { background: #eef4ff; border-color: #b8cff5; }
-  .card.green-tint { background: #edfaf2; border-color: #9ddcba; }
-  .card.red-tint { background: #fff1ee; border-color: #f5b8a8; }
-  .card-head { font-size: 10px; font-weight: 600; color: #6b7a99; margin-bottom: .35rem; letter-spacing:.04em; }
-  .card-head.blue { color: #1a3a6b; }
-  .card-head.green { color: #0d6640; }
-  .card-head.red { color: #922a10; }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin: 0 .85rem .65rem; }
-  .num {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 17px; height: 17px; border-radius: 50%;
-    background: #dce7fb; color: #1a3a6b;
-    font-size: 10px; font-weight: 700; margin-right: 4px;
-    vertical-align: middle; flex-shrink: 0;
-  }
-  .arrow { text-align: center; color: #aab2c8; font-size: 20px; padding: .1rem 0 .2rem; }
-
-  /* Blank button */
-  .bw { position: relative; display: inline-block; vertical-align: middle; }
-  .bb {
-    display: inline-block; min-width: 64px; padding: 1px 8px;
-    border-radius: 5px; border: 1.5px dashed #3a8ef6;
-    background: #eef4ff; color: #1a3a6b;
-    font-size: 12px; font-weight: 600; cursor: pointer;
-    text-align: center; user-select: none; transition: background .12s;
-    line-height: 1.7;
-  }
-  .bb:active { background: #d5e5ff; }
-  .bb.correct { border: 1.5px solid #1d9e75; background: #e1f5ee; color: #085041; cursor: default; }
-  .bb.wrong   { border: 1.5px solid #d85a30; background: #fff0ec; color: #922a10; cursor: default; }
-
-  /* Dropdown */
-  .dd {
-    display: none; position: absolute;
-    top: calc(100% + 5px); left: 50%; transform: translateX(-50%);
-    background: #fff; border: 1px solid #d0d8e8;
-    border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.12);
-    z-index: 200; min-width: 120px; overflow: hidden;
-  }
-  .dd.open { display: block; }
-  .dd-opt {
-    padding: .6rem 1rem; font-size: 13px; color: #1a1a1a;
-    cursor: pointer; white-space: nowrap; border-bottom: .5px solid #f0f1f5;
-  }
-  .dd-opt:last-child { border-bottom: none; }
-  .dd-opt:active { background: #eef4ff; }
-
-  /* Bottom bar */
-  .bottom-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: #fff; border-top: 1px solid #e8eaf0;
-    padding: .75rem 1rem; display: flex; gap: .55rem; align-items: center;
-    box-shadow: 0 -4px 16px rgba(0,0,0,.06);
-  }
-  .btn-check {
-    flex: 1; background: #1a3a6b; color: #fff;
-    border: none; border-radius: 10px; padding: .7rem;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-  }
-  .btn-check:active { background: #122a52; }
-  .btn-reset {
-    background: #f0f2f7; color: #4a5568;
-    border: none; border-radius: 10px; padding: .7rem 1rem;
-    font-size: 13px; font-weight: 500; cursor: pointer;
-  }
-  .score-badge {
-    font-size: 13px; font-weight: 700; min-width: 52px; text-align: center;
-    color: #1a3a6b;
-  }
-  .score-badge.all { color: #0d6640; }
-  .score-badge.none { color: #922a10; }
-
-  /* Result overlay */
-  .result-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(20,30,60,.5); z-index: 300;
-    align-items: center; justify-content: center;
-  }
-  .result-overlay.show { display: flex; }
-  .result-box {
-    background: #fff; border-radius: 18px;
-    padding: 2rem 1.5rem; text-align: center;
-    width: 80vw; max-width: 320px;
-  }
-  .result-emoji { font-size: 48px; margin-bottom: .75rem; }
-  .result-score { font-size: 32px; font-weight: 700; color: #1a3a6b; margin-bottom: .4rem; }
-  .result-msg { font-size: 14px; color: #4a5568; margin-bottom: 1.25rem; line-height: 1.6; }
-  .result-close {
-    background: #1a3a6b; color: #fff; border: none;
-    border-radius: 10px; padding: .7rem 2rem;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-  }
-
-  /* Print QR section */
-  @media print {
-    .bottom-bar, .result-overlay { display: none !important; }
-    body { background: #fff; padding-bottom: 0; }
-    .qr-section { display: block !important; }
-  }
-  .qr-section {
-    display: none;
-    margin: 1rem .85rem 0;
-    background: #fff; border-radius: 12px;
-    border: 1px solid #e8eaf0;
-    padding: 1rem; text-align: center;
-  }
-
-  /* spacer for fixed bottom bar */
-  .spacer { height: 72px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#f5f6f8;color:#1a1a1a;min-height:100vh;padding-bottom:2rem}
+.hdr{background:#1a3a6b;color:#fff;padding:.85rem 1rem .75rem;display:flex;justify-content:space-between;align-items:center}
+.hdr-t{font-size:15px;font-weight:600}
+.hdr-s{font-size:10px;opacity:.6;margin-top:2px}
+.prog-wrap{background:#d0d8e8;height:4px}
+.prog-bar{background:#3a8ef6;height:4px;width:0%;transition:width .3s}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#fff;border-bottom:1px solid #e8eaf0}
+.tab{padding:.7rem .5rem;font-size:12px;font-weight:600;text-align:center;cursor:pointer;color:#6b7a99;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:#1a3a6b;border-bottom:2px solid #1a3a6b}
+.panel{display:none;padding:.1rem 0 .5rem}
+.panel.active{display:block}
+.slabel{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#6b7a99;padding:.8rem .85rem .25rem}
+.card{background:#fff;border:1px solid #e8eaf0;border-radius:12px;margin:.1rem .75rem .5rem;padding:.75rem .9rem;font-size:13.5px;color:#1a1a1a;line-height:2}
+.card.blue{background:#eef4ff;border-color:#b8cff5}
+.card.green{background:#edfaf2;border-color:#9ddcba}
+.card.red{background:#fff1ee;border-color:#f5b8a8}
+.card.amber{background:#fefaee;border-color:#f5dfa8}
+.chtag{font-size:10px;font-weight:600;margin-bottom:.3rem}
+.chtag.b{color:#0C447C}.chtag.g{color:#085041}.chtag.r{color:#712B13}.chtag.a{color:#633806}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.1rem .75rem .5rem}
+.two .card{margin:0}
+.arr{text-align:center;color:#aab2c8;font-size:18px;padding:.1rem 0}
+.num{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:#dce7fb;color:#1a3a6b;font-size:10px;font-weight:700;margin-right:4px;vertical-align:middle;flex-shrink:0}
+.bw{position:relative;display:inline-block;vertical-align:middle}
+.bb{display:inline-block;min-width:64px;padding:2px 8px;border-radius:5px;border:1.5px dashed #3a8ef6;background:#eef4ff;color:#1a3a6b;font-size:12px;font-weight:600;cursor:pointer;text-align:center;user-select:none;transition:background .12s;line-height:1.7}
+.bb:active{background:#d5e5ff}
+.bb.ok{border:1.5px solid #1d9e75;background:#e1f5ee;color:#085041;cursor:default}
+.bb.ng{border:1.5px solid #d85a30;background:#fff0ec;color:#922a10;cursor:default}
+.dd{display:none;position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);background:#fff;border:1px solid #d0d8e8;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:200;min-width:130px;overflow:hidden}
+.dd.open{display:block}
+.dd-opt{padding:.6rem 1rem;font-size:13px;color:#1a1a1a;cursor:pointer;white-space:nowrap;border-bottom:.5px solid #f0f1f5}
+.dd-opt:last-child{border-bottom:none}
+.dd-opt:active{background:#eef4ff}
+.actions{display:flex;gap:.5rem;margin:.75rem .75rem 0;align-items:center}
+.btn-check{flex:1;background:#1a3a6b;color:#fff;border:none;border-radius:10px;padding:.7rem;font-size:14px;font-weight:600;cursor:pointer}
+.btn-check:active{background:#122a52}
+.btn-reset{background:#f0f2f7;color:#4a5568;border:none;border-radius:10px;padding:.7rem 1rem;font-size:13px;font-weight:500;cursor:pointer}
+.score-badge{font-size:13px;font-weight:700;min-width:48px;text-align:center;color:#1a3a6b}
+.result{display:none;margin:.65rem .75rem 0;background:#f0f4ff;border-radius:12px;padding:1rem;text-align:center;border:1px solid #c8d8f5}
+.result.show{display:block}
+.r-score{font-size:28px;font-weight:700;color:#1a3a6b;margin-bottom:.25rem}
+.r-msg{font-size:13px;color:#4a5568;line-height:1.6}
 </style>
 </head>
 <body>
 
-<header>
-  <div>
-    <div class="title">과잉 관광 개념 확인</div>
-    <div class="sub">PIF 영어학원 · 지문 내용 도식 퀴즈</div>
-  </div>
-  <div class="badge">빈칸 클릭 → 선택</div>
-</header>
-<div class="progress-bar-wrap"><div class="progress-bar" id="prog"></div></div>
+<div class="hdr">
+  <div><div class="hdr-t">개념 확인 퀴즈</div><div class="hdr-s">PIF 영어학원 · 빈칸을 눌러 선택하세요</div></div>
+</div>
+<div class="prog-wrap"><div class="prog-bar" id="prog"></div></div>
 
-<!-- 핵심 전제 -->
-<div class="section-label">핵심 전제</div>
-<div class="card blue-tint">
-  <div class="card-head blue">❶❷ 관광학·사회과학의 공통 가정</div>
-  사람과 장소는 <span class="bw" id="w-b1"><span class="bb" id="b1" onclick="toggleDD('b1')">?</span>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)">① 소유권의 막대 다발</div>
+  <div class="tab" onclick="switchTab(1)">② 개인 일기와 주체성</div>
+</div>
+
+<!-- ===== PANEL 1: 소유권 ===== -->
+<div class="panel active" id="panel-0">
+
+  <div class="slabel">핵심 개념</div>
+  <div class="card blue">
+    <div class="chtag b">❶❷ 소유권의 비유</div>
+    변호사들은 소유권을
+    <span class="bw"><span class="bb" id="a1" onclick="tog('a1')">?</span>
+    <div class="dd" id="dd-a1">
+      <div class="dd-opt" onclick="pick('a1','막대 다발',true)">막대 다발</div>
+      <div class="dd-opt" onclick="pick('a1','단일 권리',false)">단일 권리</div>
+      <div class="dd-opt" onclick="pick('a1','계약 관계',false)">계약 관계</div>
+    </div></span>로 묘사한다<br>
+    약 <span class="bw"><span class="bb" id="a2" onclick="tog('a2')">?</span>
+    <div class="dd" id="dd-a2">
+      <div class="dd-opt" onclick="pick('a2','1세기 전',true)">1세기 전</div>
+      <div class="dd-opt" onclick="pick('a2','2세기 전',false)">2세기 전</div>
+      <div class="dd-opt" onclick="pick('a2','50년 전',false)">50년 전</div>
+    </div></span> 도입 → 법학 교육·실무를 극적으로 변화
+  </div>
+
+  <div class="slabel">비유가 유용한 이유</div>
+  <div class="card">
+    <span class="num">❸</span>소유권을
+    <span class="bw"><span class="bb" id="a3" onclick="tog('a3')">?</span>
+    <div class="dd" id="dd-a3">
+      <div class="dd-opt" onclick="pick('a3','분리·재결합 가능한',true)">분리·재결합 가능한</div>
+      <div class="dd-opt" onclick="pick('a3','절대적·불변의',false)">절대적·불변의</div>
+      <div class="dd-opt" onclick="pick('a3','공동 소유의',false)">공동 소유의</div>
+    </div></span> 대인 관계적 권리의 모음으로 볼 수 있게 해 줌
+  </div>
+
+  <div class="slabel">막대의 종류 (❹)</div>
+  <div class="card amber">
+    <div class="chtag a">'내 것'이라고 할 때 포함되는 권리들</div>
+    <span class="bw"><span class="bb" id="a4" onclick="tog('a4')">?</span>
+    <div class="dd" id="dd-a4">
+      <div class="dd-opt" onclick="pick('a4','판매',true)">판매</div>
+      <div class="dd-opt" onclick="pick('a4','압류',false)">압류</div>
+      <div class="dd-opt" onclick="pick('a4','공유',false)">공유</div>
+    </div></span> · 임대 · 저당 · 허가 · 증여 ·
+    <span class="bw"><span class="bb" id="a5" onclick="tog('a5')">?</span>
+    <div class="dd" id="dd-a5">
+      <div class="dd-opt" onclick="pick('a5','파괴',true)">파괴</div>
+      <div class="dd-opt" onclick="pick('a5','상속',false)">상속</div>
+      <div class="dd-opt" onclick="pick('a5','공개',false)">공개</div>
+    </div></span> 막대 등
+  </div>
+
+  <div class="slabel">막대의 분할 (❺❻)</div>
+  <div class="card green">
+    <div class="chtag g">토지 한 면의 예시</div>
+    땅 주인 / 저당권
+    <span class="bw"><span class="bb" id="a6" onclick="tog('a6')">?</span>
+    <div class="dd" id="dd-a6">
+      <div class="dd-opt" onclick="pick('a6','은행',true)">은행</div>
+      <div class="dd-opt" onclick="pick('a6','정부',false)">정부</div>
+      <div class="dd-opt" onclick="pick('a6','세입자',false)">세입자</div>
+    </div></span> / 임대차 세입자 / 면허 배관공 / 광물권
+    <span class="bw"><span class="bb" id="a7" onclick="tog('a7')">?</span>
+    <div class="dd" id="dd-a7">
+      <div class="dd-opt" onclick="pick('a7','석유 회사',true)">석유 회사</div>
+      <div class="dd-opt" onclick="pick('a7','지방자치단체',false)">지방자치단체</div>
+      <div class="dd-opt" onclick="pick('a7','건설사',false)">건설사</div>
+    </div></span><br>
+    → 각 당사자가 다발의
+    <span class="bw"><span class="bb" id="a8" onclick="tog('a8')">?</span>
+    <div class="dd" id="dd-a8">
+      <div class="dd-opt" onclick="pick('a8','막대 하나',true)">막대 하나</div>
+      <div class="dd-opt" onclick="pick('a8','다발 전체',false)">다발 전체</div>
+      <div class="dd-opt" onclick="pick('a8','절반씩',false)">절반씩</div>
+    </div></span>를 소유
+  </div>
+
+  <div class="actions">
+    <button class="btn-check" onclick="checkPanel(0)">정답 확인</button>
+    <button class="btn-reset" onclick="resetPanel(0)">↺ 다시</button>
+    <div class="score-badge" id="sc-0"></div>
+  </div>
+  <div class="result" id="result-0">
+    <div class="r-score" id="rs-0"></div>
+    <div class="r-msg" id="rm-0"></div>
+  </div>
+</div>
+
+<!-- ===== PANEL 2: 일기 ===== -->
+<div class="panel" id="panel-1">
+
+  <div class="slabel">역사적 맥락</div>
+  <div class="card blue">
+    <div class="chtag b">❶ 개인 일기의 정착 시기</div>
+    <span class="bw"><span class="bb" id="b1" onclick="tog('b1')">?</span>
     <div class="dd" id="dd-b1">
-      <div class="dd-opt" onclick="pick('b1','명확하게 정의된',true)">명확하게 정의된</div>
-      <div class="dd-opt" onclick="pick('b1','감각적으로 느끼는',false)">감각적으로 느끼는</div>
-      <div class="dd-opt" onclick="pick('b1','유동적으로 변하는',false)">유동적으로 변하는</div>
-    </div>
-  </span> 것으로 간주된다
-</div>
+      <div class="dd-opt" onclick="pick('b1','18·19세기',true)">18·19세기</div>
+      <div class="dd-opt" onclick="pick('b1','16·17세기',false)">16·17세기</div>
+      <div class="dd-opt" onclick="pick('b1','20세기',false)">20세기</div>
+    </div></span>에 완전히 정착 →
+    <span class="bw"><span class="bb" id="b2" onclick="tog('b2')">?</span>
+    <div class="dd" id="dd-b2">
+      <div class="dd-opt" onclick="pick('b2','현대적 주체성',true)">현대적 주체성</div>
+      <div class="dd-opt" onclick="pick('b2','공동체 의식',false)">공동체 의식</div>
+      <div class="dd-opt" onclick="pick('b2','종교적 성찰',false)">종교적 성찰</div>
+    </div></span> 구축의 중심이 됨
+  </div>
 
-<!-- 사람 vs 장소 -->
-<div class="two-col">
-  <div class="card" style="margin:0">
-    <div class="card-head"><span class="num">❸</span>사람 (People)</div>
-    주인 또는 <span class="bw" id="w-b2"><span class="bb" id="b2" onclick="toggleDD('b2')">?</span>
-      <div class="dd" id="dd-b2">
-        <div class="dd-opt" onclick="pick('b2','손님',true)">손님</div>
-        <div class="dd-opt" onclick="pick('b2','여행사',false)">여행사</div>
-        <div class="dd-opt" onclick="pick('b2','정부',false)">정부</div>
-      </div>
-    </span> 역할<br>
-    경계가 <span class="bw" id="w-b3"><span class="bb" id="b3" onclick="toggleDD('b3')">?</span>
+  <div class="slabel">일기의 기능</div>
+  <div class="two">
+    <div class="card green">
+      <div class="chtag g">❷❸ 매체로서</div>
+      계몽된
+      <span class="bw"><span class="bb" id="b3" onclick="tog('b3')">?</span>
       <div class="dd" id="dd-b3">
-        <div class="dd-opt" onclick="pick('b3','확실한',true)">확실한</div>
-        <div class="dd-opt" onclick="pick('b3','모호한',false)">모호한</div>
-        <div class="dd-opt" onclick="pick('b3','유연한',false)">유연한</div>
-      </div>
-    </span> 행위자
-  </div>
-  <div class="card" style="margin:0">
-    <div class="card-head"><span class="num">❹</span>장소 (Place)</div>
-    명확한 경계의 안정적인 <span class="bw" id="w-b4"><span class="bb" id="b4" onclick="toggleDD('b4')">?</span>
+        <div class="dd-opt" onclick="pick('b3','자유로운 주체',true)">자유로운 주체</div>
+        <div class="dd-opt" onclick="pick('b3','사회적 관계',false)">사회적 관계</div>
+        <div class="dd-opt" onclick="pick('b3','공적 담론',false)">공적 담론</div>
+      </div></span>가 구성되는 중심 매체<br>
+      행방·감정·<span class="bw"><span class="bb" id="b4" onclick="tog('b4')">?</span>
       <div class="dd" id="dd-b4">
-        <div class="dd-opt" onclick="pick('b4','용기(容器)',true)">용기(容器)</div>
-        <div class="dd-opt" onclick="pick('b4','공간',false)">공간</div>
-        <div class="dd-opt" onclick="pick('b4','시스템',false)">시스템</div>
-      </div>
-    </span>로 취급
-  </div>
-</div>
-
-<!-- 귀결 -->
-<div class="arrow">↓</div>
-<div class="section-label">논리적 귀결</div>
-<div class="card">
-  <span class="num">❺</span>장소는 <span class="bw" id="w-b5"><span class="bb" id="b5" onclick="toggleDD('b5')">?</span>
-    <div class="dd" id="dd-b5">
-      <div class="dd-opt" onclick="pick('b5','관광객',true)">관광객</div>
-      <div class="dd-opt" onclick="pick('b5','상품',false)">상품</div>
-      <div class="dd-opt" onclick="pick('b5','자본',false)">자본</div>
+        <div class="dd-opt" onclick="pick('b4','생각',true)">생각</div>
+        <div class="dd-opt" onclick="pick('b4','꿈',false)">꿈</div>
+        <div class="dd-opt" onclick="pick('b4','재산',false)">재산</div>
+      </div></span>을 매일 기록
     </div>
-  </span>으로 가득 찰 수 있다<br>
-  → 따라서 <span class="bw" id="w-b6"><span class="bb" id="b6" onclick="toggleDD('b6')">?</span>
-    <div class="dd" id="dd-b6">
-      <div class="dd-opt" onclick="pick('b6','과잉 관광',true)">과잉 관광</div>
-      <div class="dd-opt" onclick="pick('b6','도시 집중',false)">도시 집중</div>
-      <div class="dd-opt" onclick="pick('b6','경제 불황',false)">경제 불황</div>
+    <div class="card amber">
+      <div class="chtag a">❹ 다시 읽기의 효과</div>
+      이질적 항목·사건·우연 →<br>자신에 관한
+      <span class="bw"><span class="bb" id="b5" onclick="tog('b5')">?</span>
+      <div class="dd" id="dd-b5">
+        <div class="dd-opt" onclick="pick('b5','통찰력·이야기',true)">통찰력·이야기</div>
+        <div class="dd-opt" onclick="pick('b5','객관적 사실',false)">객관적 사실</div>
+        <div class="dd-opt" onclick="pick('b5','타인과의 비교',false)">타인과의 비교</div>
+      </div></span>로 재구성<br>→
+      <span class="bw"><span class="bb" id="b6" onclick="tog('b6')">?</span>
+      <div class="dd" id="dd-b6">
+        <div class="dd-opt" onclick="pick('b6','주체성 형성',true)">주체성 형성</div>
+        <div class="dd-opt" onclick="pick('b6','공동체 형성',false)">공동체 형성</div>
+        <div class="dd-opt" onclick="pick('b6','지식 축적',false)">지식 축적</div>
+      </div></span> 가능
     </div>
-  </span>으로 고통받을 수 있다
-</div>
-
-<!-- 비판적 검토 -->
-<div class="arrow">↓</div>
-<div class="section-label">비판적 검토 ❼–❿</div>
-<div class="two-col">
-  <div class="card green-tint" style="margin:0">
-    <div class="card-head green">단순한 경우 ❼❽</div>
-    실제로 <span class="bw" id="w-b7"><span class="bb" id="b7" onclick="toggleDD('b7')">?</span>
-      <div class="dd" id="dd-b7">
-        <div class="dd-opt" onclick="pick('b7','수용력',true)">수용력</div>
-        <div class="dd-opt" onclick="pick('b7','매력도',false)">매력도</div>
-        <div class="dd-opt" onclick="pick('b7','접근성',false)">접근성</div>
-      </div>
-    </span>이 제한된 특정 명소<br>
-    예: <span class="bw" id="w-b8"><span class="bb" id="b8" onclick="toggleDD('b8')">?</span>
-      <div class="dd" id="dd-b8">
-        <div class="dd-opt" onclick="pick('b8','에펠탑',true)">에펠탑</div>
-        <div class="dd-opt" onclick="pick('b8','베네치아',false)">베네치아</div>
-        <div class="dd-opt" onclick="pick('b8','바르셀로나',false)">바르셀로나</div>
-      </div>
-    </span>
   </div>
-  <div class="card red-tint" style="margin:0">
-    <div class="card-head red">복잡한 경우 ❾❿</div>
-    도시·지역·국가 단위<br>
-    물리적 수용력 외에 <span class="bw" id="w-b9"><span class="bb" id="b9" onclick="toggleDD('b9')">?</span>
-      <div class="dd" id="dd-b9">
-        <div class="dd-opt" onclick="pick('b9','자연적 저하',true)">자연적 저하</div>
-        <div class="dd-opt" onclick="pick('b9','인구 증가',false)">인구 증가</div>
-        <div class="dd-opt" onclick="pick('b9','물가 상승',false)">물가 상승</div>
-      </div>
-    </span>·경제 유출 등
+
+  <div class="slabel">사적 공개와 자기 점검</div>
+  <div class="card">
+    <span class="num">❻</span>일기는
+    <span class="bw"><span class="bb" id="b7" onclick="tog('b7')">?</span>
+    <div class="dd" id="dd-b7">
+      <div class="dd-opt" onclick="pick('b7','자신을 위해',true)">자신을 위해</div>
+      <div class="dd-opt" onclick="pick('b7','독자를 위해',false)">독자를 위해</div>
+      <div class="dd-opt" onclick="pick('b7','후대를 위해',false)">후대를 위해</div>
+    </div></span> 씀 → 자신을 자신에게
+    <span class="bw"><span class="bb" id="b8" onclick="tog('b8')">?</span>
+    <div class="dd" id="dd-b8">
+      <div class="dd-opt" onclick="pick('b8','공개적으로 만듦',true)">공개적으로 만듦</div>
+      <div class="dd-opt" onclick="pick('b8','숨기게 만듦',false)">숨기게 만듦</div>
+      <div class="dd-opt" onclick="pick('b8','비교하게 만듦',false)">비교하게 만듦</div>
+    </div></span> (Habermas)
   </div>
-</div>
+  <div class="card red">
+    <div class="chtag r">❼ 결과</div>
+    사적 영역에서 자아를 공개 →<br>자아가
+    <span class="bw"><span class="bb" id="b9" onclick="tog('b9')">?</span>
+    <div class="dd" id="dd-b9">
+      <div class="dd-opt" onclick="pick('b9','자기 점검·자기비판',true)">자기 점검·자기비판</div>
+      <div class="dd-opt" onclick="pick('b9','타인의 평가',false)">타인의 평가</div>
+      <div class="dd-opt" onclick="pick('b9','사회적 비교',false)">사회적 비교</div>
+    </div></span>의 대상이 됨
+  </div>
 
-<div class="card" style="margin:.65rem .85rem 0">
-  <span class="num">❿</span>'과도하다'는 개념은 매우
-  <span class="bw" id="w-b10"><span class="bb" id="b10" onclick="toggleDD('b10')">?</span>
-    <div class="dd" id="dd-b10">
-      <div class="dd-opt" onclick="pick('b10','상대적',true)">상대적</div>
-      <div class="dd-opt" onclick="pick('b10','절대적',false)">절대적</div>
-      <div class="dd-opt" onclick="pick('b10','주관적',false)">주관적</div>
-    </div>
-  </span>인 개념이다
-</div>
-
-<div class="spacer"></div>
-
-<!-- QR Section (print only) -->
-<div class="qr-section" id="qrSection">
-  <p style="font-size:12px;color:#6b7a99;margin-bottom:.5rem">스마트폰으로 스캔하세요</p>
-  <div id="qrcode" style="display:inline-block"></div>
-  <p style="font-size:11px;color:#aab2c8;margin-top:.5rem">PIF 영어학원</p>
-</div>
-
-<!-- Bottom bar -->
-<div class="bottom-bar">
-  <button class="btn-check" onclick="checkAll()">정답 확인</button>
-  <button class="btn-reset" onclick="resetAll()">↺ 다시</button>
-  <div class="score-badge" id="scoreBadge"></div>
-</div>
-
-<!-- Result overlay -->
-<div class="result-overlay" id="resultOverlay">
-  <div class="result-box">
-    <div class="result-emoji" id="rEmoji">🎉</div>
-    <div class="result-score" id="rScore"></div>
-    <div class="result-msg" id="rMsg"></div>
-    <button class="result-close" onclick="closeResult()">확인</button>
+  <div class="actions">
+    <button class="btn-check" onclick="checkPanel(1)">정답 확인</button>
+    <button class="btn-reset" onclick="resetPanel(1)">↺ 다시</button>
+    <div class="score-badge" id="sc-1"></div>
+  </div>
+  <div class="result" id="result-1">
+    <div class="r-score" id="rs-1"></div>
+    <div class="r-msg" id="rm-1"></div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const TOTAL = 10;
-const state = {};
+const PANELS={
+  0:{ids:['a1','a2','a3','a4','a5','a6','a7','a8'],total:8},
+  1:{ids:['b1','b2','b3','b4','b5','b6','b7','b8','b9'],total:9}
+};
+const st={};
 
-function toggleDD(id) {
-  const btn = document.getElementById(id);
-  if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
-  const dd = document.getElementById('dd-' + id);
-  const isOpen = dd.classList.contains('open');
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
   closeAll();
-  if (!isOpen) dd.classList.add('open');
 }
-
-function closeAll() {
-  document.querySelectorAll('.dd').forEach(d => d.classList.remove('open'));
-}
-
-function pick(id, val, correct) {
-  state[id] = correct;
-  const btn = document.getElementById(id);
-  btn.textContent = val;
-  btn.classList.remove('correct', 'wrong');
-  btn.classList.add(correct ? 'correct' : 'wrong');
+function tog(id){
+  const btn=document.getElementById(id);
+  if(btn.classList.contains('ok')||btn.classList.contains('ng'))return;
+  const dd=document.getElementById('dd-'+id);
+  const was=dd.classList.contains('open');
   closeAll();
-  updateProgress();
+  if(!was)dd.classList.add('open');
 }
-
-function updateProgress() {
-  const filled = Object.keys(state).length;
-  document.getElementById('prog').style.width = (filled / TOTAL * 100) + '%';
+function closeAll(){document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'))}
+function pick(id,val,correct){
+  st[id]=correct;
+  const btn=document.getElementById(id);
+  btn.textContent=val;
+  btn.className='bb '+(correct?'ok':'ng');
+  closeAll();
+  const all=[...PANELS[0].ids,...PANELS[1].ids];
+  document.getElementById('prog').style.width=(all.filter(id=>st[id]!==undefined).length/17*100)+'%';
 }
-
-function checkAll() {
-  const ids = ['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'];
-  const unanswered = ids.filter(id => state[id] === undefined);
-  if (unanswered.length > 0) {
-    const sb = document.getElementById('scoreBadge');
-    sb.textContent = `${unanswered.length}개 남음`;
-    sb.className = 'score-badge none';
-    return;
-  }
-  const correct = ids.filter(id => state[id] === true).length;
-  const overlay = document.getElementById('resultOverlay');
-  const msgs = [
-    ['😅','조금 더 읽어볼까요?','지문을 다시 한 번 꼼꼼히 읽어보세요!'],
-    ['🙂','잘 하고 있어요!','핵심 개념을 조금 더 다져봐요.'],
-    ['👍','훌륭해요!','거의 다 맞혔어요. 한 번 더 도전!'],
-    ['🎉','완벽해요!','모든 개념을 정확히 이해했어요!'],
-  ];
-  const idx = correct === TOTAL ? 3 : correct >= 8 ? 2 : correct >= 5 ? 1 : 0;
-  document.getElementById('rEmoji').textContent = msgs[idx][0];
-  document.getElementById('rScore').textContent = `${correct} / ${TOTAL}`;
-  document.getElementById('rMsg').textContent = msgs[idx][2];
-  overlay.classList.add('show');
-  const sb = document.getElementById('scoreBadge');
-  sb.textContent = `${correct}/${TOTAL}`;
-  sb.className = 'score-badge' + (correct === TOTAL ? ' all' : correct < 5 ? ' none' : '');
+function checkPanel(p){
+  const {ids,total}=PANELS[p];
+  const left=ids.filter(id=>st[id]===undefined).length;
+  const sc=document.getElementById('sc-'+p);
+  if(left){sc.textContent=left+'개 남음';return}
+  const correct=ids.filter(id=>st[id]===true).length;
+  sc.textContent=correct+'/'+total;
+  document.getElementById('result-'+p).classList.add('show');
+  document.getElementById('rs-'+p).textContent=correct+' / '+total;
+  const msgs=['지문을 다시 읽어봐요!','조금 더 다져봐요.','거의 다 맞혔어요!','완벽해요!'];
+  document.getElementById('rm-'+p).textContent=msgs[correct===total?3:correct>=Math.ceil(total*.8)?2:correct>=Math.ceil(total*.5)?1:0];
 }
-
-function closeResult() {
-  document.getElementById('resultOverlay').classList.remove('show');
+function resetPanel(p){
+  PANELS[p].ids.forEach(id=>{delete st[id];const b=document.getElementById(id);b.textContent='?';b.className='bb'});
+  document.getElementById('sc-'+p).textContent='';
+  document.getElementById('result-'+p).classList.remove('show');
+  const all=[...PANELS[0].ids,...PANELS[1].ids];
+  document.getElementById('prog').style.width=(all.filter(id=>st[id]!==undefined).length/17*100)+'%';
 }
-
-function resetAll() {
-  Object.keys(state).forEach(k => delete state[k]);
-  document.querySelectorAll('.bb').forEach(btn => {
-    btn.textContent = '?';
-    btn.className = 'bb';
-  });
-  document.getElementById('scoreBadge').textContent = '';
-  document.getElementById('prog').style.width = '0%';
-  closeResult();
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('.bw')) closeAll();
-});
-
-// QR code generation pointing to this file's URL
-window.addEventListener('load', () => {
-  const url = window.location.href;
-  try {
-    new QRCode(document.getElementById('qrcode'), {
-      text: url,
-      width: 140, height: 140,
-      colorDark: '#1a3a6b', colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  } catch(e) {}
-});
+document.addEventListener('click',e=>{if(!e.target.closest('.bw'))closeAll()});
 </script>
 </body>
 </html>
