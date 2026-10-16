@@ -217,7 +217,32 @@
   }
   function exPlain(ex) { return String(ex).replace(/[\[\]]/g, ''); }
   function lessonOf(r) { var i = r.indexOf('-'); return i > 0 ? r.slice(0, i) : r; }
-  function rangeLabel(r) { var i = r.indexOf('-'); return i > 0 ? '지문 ' + r.slice(i + 1) : r; }
+  function rangeLabel(r) {
+    var i = r.indexOf('-');
+    if (i > 0) return '지문 ' + r.slice(i + 1);
+    var m = /^P(\d+)$/.exec(r);
+    return m ? '지문 ' + m[1] : r;
+  }
+  function rangeLong(r) { var i = r.indexOf('-'); return i > 0 ? r.slice(0, i) + ' · ' + rangeLabel(r) : rangeLabel(r); }
+  // 범위 묶음: '3과-01'처럼 앞부분이 있으면 그것으로 묶고, 'P01'·'Unit 18'처럼 없으면 10개씩 묶음
+  function makeGroups() {
+    if (RANGES.every(function (r) { return r.indexOf('-') > 0; })) {
+      var gs = [];
+      RANGES.forEach(function (r) {
+        var l = lessonOf(r), g = gs.filter(function (x) { return x.name === l; })[0];
+        if (!g) { g = { name: l, items: [] }; gs.push(g); }
+        g.items.push(r);
+      });
+      return gs;
+    }
+    if (RANGES.length <= 12) return [{ name: '', items: RANGES.slice() }];
+    var n = Math.ceil(RANGES.length / Math.ceil(RANGES.length / 10)), out = [];
+    for (var k = 0; k < RANGES.length; k += n) {
+      var part = RANGES.slice(k, k + n);
+      out.push({ name: rangeLabel(part[0]) + ' – ' + rangeLabel(part[part.length - 1]).replace('지문 ', ''), items: part });
+    }
+    return out;
+  }
 
   function refreshData(rows) {
     DATA = rows; RANGES = [];
@@ -239,22 +264,26 @@
   // ---------- 범위 화면 ----------
   function buildSetup() {
     var box = $('lessons'); box.innerHTML = '';
-    var lessons = [];
-    RANGES.forEach(function (r) { var l = lessonOf(r); if (lessons.indexOf(l) < 0) lessons.push(l); });
-    lessons.forEach(function (l) {
+    makeGroups().forEach(function (g) {
       var wrap = document.createElement('div'); wrap.className = 'lesson';
-      var head = document.createElement('div'); head.className = 'ln';
-      head.innerHTML = '<span>' + esc(l) + '</span>';
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = l + ' 전체';
-      b.onclick = function () {
-        var rs = RANGES.filter(function (r) { return lessonOf(r) === l; });
-        var allOn = rs.every(function (r) { return sel[r]; });
-        rs.forEach(function (r) { if (allOn) delete sel[r]; else sel[r] = true; });
-        refreshSetup();
-      };
-      head.appendChild(b); wrap.appendChild(head);
+      if (g.name) {
+        var head = document.createElement('div'); head.className = 'ln';
+        head.innerHTML = '<span>' + esc(g.name) + '</span>';
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = g.name.indexOf('–') >= 0 ? '이 묶음 전체' : g.name + ' 전체';
+        b.onclick = function () {
+          var allOn = g.items.every(function (r) { return sel[r]; });
+          g.items.forEach(function (r) { if (allOn) delete sel[r]; else sel[r] = true; });
+          refreshSetup();
+        };
+        head.appendChild(b); wrap.appendChild(head);
+      }
       var chips = document.createElement('div'); chips.className = 'chips';
-      RANGES.filter(function (r) { return lessonOf(r) === l; }).forEach(function (r) {
+      // 마지막 줄이 덜 비도록 열 수(3~5) 선택
+      var cols = [5, 4, 3].map(function (c) { return { c: c, w: (c - g.items.length % c) % c }; })
+        .sort(function (a, b) { return a.w - b.w || b.c - a.c; })[0].c;
+      chips.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
+      if (cols === 5) chips.classList.add('short');
+      g.items.forEach(function (r) {
         var c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.r = r;
         c.onclick = function () { if (sel[r]) delete sel[r]; else sel[r] = true; refreshSetup(); };
         chips.appendChild(c);
@@ -280,7 +309,8 @@
     document.querySelectorAll('.chip').forEach(function (c) {
       var r = c.dataset.r, n = missCount(r);
       c.setAttribute('aria-pressed', sel[r] ? 'true' : 'false');
-      c.innerHTML = esc(rangeLabel(r)) + (n ? '<span class="cnt" aria-label="몰라요 ' + n + '개">' + n + '</span>' : '');
+      var lab = c.parentNode && c.parentNode.classList.contains('short') ? rangeLabel(r).replace('지문 ', '') : rangeLabel(r);
+      c.innerHTML = esc(lab) + (n ? '<span class="cnt" aria-label="몰라요 ' + n + '개">' + n + '</span>' : '');
     });
     var picked = RANGES.filter(function (r) { return sel[r]; });
     $('allBtn').textContent = RANGES.every(function (r) { return sel[r]; }) ? '전체 해제' : '전체 선택';
@@ -325,7 +355,7 @@
     void card.offsetWidth; card.classList.remove('nofx');
     card.style.transform = '';
     var r = deck[idx];
-    var tag = r[0].replace('-', ' · 지문 ');
+    var tag = rangeLong(r[0]);
     $('fTag').textContent = tag; $('bTag').textContent = tag;
     var wcls = r[1].length > 14 ? 'w sm' : 'w';
     if (opt.dir === 'ek') {
@@ -413,7 +443,7 @@
     var u = unknownNow.length;
     $('dK').textContent = known; $('dU').textContent = u;
     $('dMsg').textContent = u ? '한 바퀴 끝! 몰라요 ' + u + '개' : '전부 알아요! 완벽해요';
-    $('dRange').textContent = Object.keys(sel).sort().map(function (r) { return r.replace('-', ' 지문 '); }).join(', ');
+    $('dRange').textContent = RANGES.filter(function (r) { return sel[r]; }).map(rangeLong).join(', ');
     var ml = $('missList');
     if (u) {
       ml.innerHTML = unknownNow.map(function (r) { return '<div><b>' + esc(r[1]) + '</b><span>' + esc(r[2]) + '</span></div>'; }).join('');

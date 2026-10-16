@@ -342,6 +342,9 @@ function init(rows){
     b.className='p'; b.type='button'; b.textContent=label(p); b.dataset.p=p; b.setAttribute('aria-label',p);
     pg.appendChild(b);
   });
+  // 짧은 번호(01, 02 …)만 있으면 5칸, 아니면 3칸
+  var short=RANGES.every(function(p){ return label(p).length<=3; });
+  pg.style.gridTemplateColumns='repeat('+(short?5:3)+', minmax(0, 1fr))';
   applyPreset();
   refresh();
 }
