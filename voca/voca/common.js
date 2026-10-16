@@ -2,13 +2,14 @@
  * - API: Apps Script 웹앱 주소 (단어 읽기 · 결과 저장)
  * - BOOKS: 단어장 키별 학교 이름과 표시 문구 (Code.gs QUIZZES의 키와 같아야 함)
  *   새 학교·범위를 추가할 때 여기에 한 줄, Code.gs QUIZZES에 한 줄을 추가하면 됩니다.
+ * - group이 같은 단어장끼리는 QR 하나로 묶여, 시작 화면에서 탭으로 고릅니다. (tab = 탭에 보이는 이름)
  */
 var PIF = {
   API: 'https://script.google.com/macros/s/AKfycbzLXSUQe7We0xLqI4QrCQc_q0FTB-Qy0KpedNLGDeM5IMFiyowBRnhae1uhX9yK_ho/exec',
   BOOKS: {
     seocho1:      { school: '서초고', label: '서초고1 · 2학기 기말고사 대비' },
-    sangmun1:     { school: '상문고', label: '상문고1 · 2학기 기말고사 대비' },
-    sangmun1voca: { school: '상문고', label: '상문고1 · 어휘끝' },
+    sangmun1:     { school: '상문고', label: '상문고1 · 2학기 기말고사 대비', group: 'sangmun1', tab: '기말고사 범위' },
+    sangmun1voca: { school: '상문고', label: '상문고1 · 어휘끝', group: 'sangmun1', tab: '어휘끝' },
     seoullight:   { school: '서울고', label: '서울고1 · 2학기 기말고사 대비' },
     seoul2:       { school: '서울고', label: '서울고2 · 2학기 기말고사 대비' }
   },

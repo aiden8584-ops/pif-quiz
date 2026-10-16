@@ -37,6 +37,10 @@
   .flow { font-size: 13px; color: var(--sub); text-align: center; line-height: 1.6 }
   .flow b { color: var(--navy) }
   .foot { margin-top: auto; text-align: center; font-size: 12px; color: #9a9db0 }
+  .seg { display: flex; gap: 6px; background: #fff; border: 1.5px solid var(--line); border-radius: 16px; padding: 5px }
+  .seg button { flex: 1; border: 0; background: transparent; font: inherit; font-size: 16px; font-weight: 700; color: var(--sub); padding: 13px 6px; border-radius: 12px; cursor: pointer }
+  .seg button.on { background: var(--navy); color: #fff }
+  .seg-cap { font-size: 13px; font-weight: 700; color: var(--sub); margin-bottom: -12px }
 </style>
 </head>
 <body>
@@ -48,6 +52,9 @@
     <div class="exam" id="lab"></div>
     <p class="lead">종이 단어장 없이도 폰으로 외우고,<br>바로 시험까지 볼 수 있어요.</p>
   </section>
+
+  <p class="seg-cap" id="segCap" hidden>단어장 고르기</p>
+  <div class="seg" id="seg" hidden></div>
 
   <a class="btn b1" id="toCards" href="#">
     <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v13"/></g></svg></span>
@@ -70,12 +77,32 @@
   var key = PIF.param('s'), b = PIF.BOOKS[key];
   if (!b) { document.getElementById('bad').hidden = false; document.getElementById('toCards').style.display = 'none'; document.getElementById('toQuiz').style.display = 'none'; return; }
   document.getElementById('sch').textContent = b.school;
-  document.getElementById('lab').textContent = b.label;
   document.title = b.school + ' 단어장 · PIF';
-  document.getElementById('toCards').href = 'cards.html?s=' + encodeURIComponent(key);
-  document.getElementById('toQuiz').href = 'quiz.html?s=' + encodeURIComponent(key);
-  // 서버를 미리 깨워 두면 다음 화면의 첫 로딩이 빨라짐
-  try { fetch(PIF.API + '?api=cards&key=' + encodeURIComponent(key)).catch(function () {}); } catch (e) {}
+  var warmed = {};
+  function pick(k) {
+    var bk = PIF.BOOKS[k];
+    document.getElementById('lab').textContent = bk.label;
+    document.getElementById('toCards').href = 'cards.html?s=' + encodeURIComponent(k);
+    document.getElementById('toQuiz').href = 'quiz.html?s=' + encodeURIComponent(k);
+    var bs = document.querySelectorAll('#seg button');
+    for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-k') === k ? 'on' : '';
+    if (b.group) { try { localStorage.setItem('vmbook:' + b.group, k); } catch (e) {} }
+    // 서버를 미리 깨워 두면 다음 화면의 첫 로딩이 빨라짐
+    if (!warmed[k]) { warmed[k] = 1; try { fetch(PIF.API + '?api=cards&key=' + encodeURIComponent(k)).catch(function () {}); } catch (e) {} }
+  }
+  var start = key;
+  if (b.group) {
+    var keys = Object.keys(PIF.BOOKS).filter(function (k) { return PIF.BOOKS[k].group === b.group; });
+    if (keys.length > 1) {
+      // QR(그룹 대표 키)로 들어오면 마지막에 고른 단어장을, 카드·시험에서 돌아오면 그 단어장을 보여줌
+      if (key === b.group) { try { var last = localStorage.getItem('vmbook:' + b.group); if (last && keys.indexOf(last) >= 0) start = last; } catch (e) {} }
+      var seg = document.getElementById('seg');
+      seg.innerHTML = keys.map(function (k) { return '<button type="button" data-k="' + k + '">' + PIF.esc(PIF.BOOKS[k].tab || PIF.BOOKS[k].label) + '</button>'; }).join('');
+      seg.addEventListener('click', function (e) { var t = e.target.closest('button'); if (t) pick(t.getAttribute('data-k')); });
+      seg.hidden = false; document.getElementById('segCap').hidden = false;
+    }
+  }
+  pick(start);
 })();
 </script>
 </body>
