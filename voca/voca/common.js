@@ -9,7 +9,8 @@ var PIF = {
     seocho1:      { school: '서초고', label: '서초고1 · 2학기 기말고사 대비' },
     sangmun1:     { school: '상문고', label: '상문고1 · 2학기 기말고사 대비' },
     sangmun1voca: { school: '상문고', label: '상문고1 · 어휘끝' },
-    seoullight:   { school: '서울고', label: '서울고1 · 2학기 기말고사 대비' }
+    seoullight:   { school: '서울고', label: '서울고1 · 2학기 기말고사 대비' },
+    seoul2:       { school: '서울고', label: '서울고2 · 2학기 기말고사 대비' }
   },
   param: function (n) {
     var m = new RegExp('[?&]' + n + '=([^&#]*)').exec(location.search);
