@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>쓰면서 외우기 · PIF</title>
+<meta name="theme-color" content="#fdf7f2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Lora:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root { --navy: #14204a; --or: #f15a1f; --ink: #1d2233; --sub: #5d6276; --bg: #fdf7f2; --line: #e9e3dc; --hl: #ffe3d4; --teal: #12806f }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent }
+  body { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; overscroll-behavior: none }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer }
+  a { color: inherit }
+  .wrap { width: 100%; max-width: 440px; min-height: 100vh; min-height: 100dvh; padding: 18px 18px 22px; display: flex; flex-direction: column }
+  .wrap.wide { max-width: 1180px }
+  [hidden] { display: none !important }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 700; color: var(--navy); min-height: 44px }
+  .top b { font-weight: 900 }
+  .back { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding-right: 8px; font-weight: 700; color: var(--navy); text-decoration: none }
+  h2 { font-size: 22px; font-weight: 900; letter-spacing: -.5px; margin: 6px 0 4px; color: var(--navy) }
+  .hint { font-size: 13px; color: var(--sub) }
+  .sec { margin-top: 20px }
+  .sec h3 { font-size: 13px; font-weight: 700; color: var(--sub); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center }
+  .link { font-size: 13px; font-weight: 700; color: var(--or); min-height: 36px; padding: 0 4px }
+  .lesson { margin-bottom: 12px }
+  .lesson .ln { font-size: 13px; font-weight: 900; color: var(--navy); margin-bottom: 6px; display: flex; align-items: center; gap: 8px }
+  .lesson .ln button { font-size: 12px; font-weight: 700; color: var(--sub); border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 10px; min-height: 30px }
+  .chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px }
+  .chip { min-height: 46px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; font-size: 15px; font-weight: 700; color: var(--ink); position: relative }
+  .chips.short .chip { font-size: 14px; padding: 0 2px }
+  .chip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff }
+  .chip .cnt { position: absolute; top: -7px; right: -5px; min-width: 20px; height: 20px; border-radius: 10px; background: var(--or); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 0 5px }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: #efe9e2; border-radius: 12px; padding: 4px; gap: 4px }
+  .seg button { min-height: 44px; border-radius: 9px; font-size: 15px; font-weight: 700; color: var(--sub) }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--navy); box-shadow: 0 1px 4px rgba(20,32,74,.12) }
+  .seg button:disabled { opacity: .45 }
+  .go { margin-top: auto; padding-top: 22px }
+  .primary { width: 100%; min-height: 56px; border-radius: 16px; background: var(--navy); color: #fff; font-size: 18px; font-weight: 900; letter-spacing: -.3px }
+  .primary:disabled { background: #b9bccb }
+  .secondary { width: 100%; min-height: 52px; border-radius: 16px; background: #fff; border: 1.5px solid var(--line); font-size: 16px; font-weight: 700; color: var(--navy); display: flex; align-items: center; justify-content: center; text-decoration: none }
+  .err { margin-top: 30px; padding: 16px; border-radius: 12px; background: #fff; border: 1px solid var(--line); font-size: 14px; line-height: 1.6 }
+  .loading { margin: auto; text-align: center; color: var(--sub); font-size: 14px }
+
+  /* 쓰기 */
+  .prog { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: var(--navy) }
+  .bar { flex: 1; height: 6px; border-radius: 3px; background: #ebe4dc; overflow: hidden }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--navy), var(--or)); transition: width .25s }
+  .tally { display: flex; gap: 8px; font-size: 12px; font-weight: 700; align-items: center }
+  .tally .k { color: var(--teal) } .tally .u { color: var(--or) }
+  .pen { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; font-size: 13px; font-weight: 700; color: var(--sub) }
+  .pen[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff }
+  .ws { flex: 1; display: flex; flex-direction: column; gap: 12px; margin-top: 12px; min-height: 0 }
+  .info { background: #fff; border: 1.5px solid var(--line); border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px }
+  .tag { display: flex; justify-content: space-between; align-items: center; gap: 8px }
+  .tag span { font-size: 12px; font-weight: 700; color: var(--sub); background: #f4efe9; border-radius: 999px; padding: 4px 10px }
+  .say { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #eef1f8; flex: none }
+  .say svg { width: 22px; height: 22px }
+  .ko { font-size: 26px; font-weight: 900; line-height: 1.35; color: var(--ink); word-break: keep-all; letter-spacing: -.5px }
+  .ex { font-family: 'Lora', serif; font-size: 15px; line-height: 1.55; color: #464b5f; background: #faf7f3; border-radius: 12px; padding: 10px 12px }
+  .ex mark { background: var(--hl); color: var(--navy); font-weight: 700; border-radius: 4px; padding: 0 2px }
+  .ex .blank { display: inline-block; min-width: 70px; border-bottom: 2px solid var(--or); color: transparent }
+  .steps { display: flex; gap: 6px; font-size: 12px; font-weight: 700; color: #a3a6b6 }
+  .steps span { flex: 1; text-align: center; padding: 6px 4px; border-radius: 999px; background: #f4efe9 }
+  .steps span.on { background: var(--navy); color: #fff }
+  .steps span.ok { background: #e3f1ee; color: var(--teal) }
+  .ans { display: flex; flex-direction: column; gap: 6px }
+  .ans .w { font-family: 'Lora', serif; font-weight: 700; font-size: 34px; line-height: 1.15; color: var(--teal); overflow-wrap: anywhere }
+  .rel { display: flex; flex-direction: column; gap: 4px; font-family: 'Lora', serif; font-size: 15px; line-height: 1.45 }
+  .rel div { display: flex; gap: 8px } .rel i { font-style: normal; font-weight: 700; font-family: 'Noto Sans KR'; flex: none; width: 18px }
+  .rel .s i { color: var(--teal) } .rel .a i { color: var(--or) }
+  .padbox { flex: 1; min-height: 260px; display: flex; flex-direction: column; gap: 10px }
+  .pad { position: relative; flex: 1; min-height: 220px; background: #fff; border: 1.5px solid var(--line); border-radius: 20px; overflow: hidden; touch-action: none }
+  .pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none }
+  .pad #gcv { pointer-events: none }      /* 공책 줄 + 흐린 따라 쓰기 글씨 (그리는 칸 아래) */
+  .pad #cv { cursor: crosshair }
+  .pad .note { position: absolute; left: 14px; top: 10px; font-size: 12px; font-weight: 700; color: #a3a6b6; pointer-events: none }
+  .tools { display: flex; gap: 8px }
+  .tools button { min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; font-size: 14px; font-weight: 700; color: var(--navy) }
+  .tools .grow { flex: 1 }
+  .tools .next { flex: 1; background: var(--navy); border-color: var(--navy); color: #fff; font-size: 16px; font-weight: 900 }
+  .tools .no { flex: 1; border: 2px solid var(--or); color: var(--or); font-size: 16px; font-weight: 900 }
+  .tools .yes { flex: 1; background: var(--teal); border-color: var(--teal); color: #fff; font-size: 16px; font-weight: 900 }
+
+  /* 태블릿 가로: 왼쪽 뜻 · 오른쪽 쓰기 */
+  @media (min-width: 820px) and (orientation: landscape) {
+    .ws { flex-direction: row; align-items: stretch }
+    .info { width: 36%; flex: none; justify-content: flex-start; overflow: auto }
+    .ko { font-size: 30px }
+    .padbox { flex: 1 }
+  }
+  @media (min-width: 700px) { .ko { font-size: 30px } .ans .w { font-size: 40px } }
+
+  /* 끝 */
+  .done { text-align: center; padding-top: 30px }
+  .big { font-size: 26px; font-weight: 900; color: var(--navy); margin-top: 10px }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 22px 0 }
+  .stat { background: #fff; border: 1.5px solid var(--line); border-radius: 16px; padding: 16px }
+  .stat b { display: block; font-size: 30px; font-weight: 900 }
+  .stat.k b { color: var(--teal) } .stat.u b { color: var(--or) }
+  .stat span { font-size: 13px; color: var(--sub) }
+  .col { display: flex; flex-direction: column; gap: 10px; margin-top: auto }
+  .misslist { text-align: left; background: #fff; border: 1.5px solid var(--line); border-radius: 16px; padding: 12px 16px; max-height: 220px; overflow: auto }
+  .misslist div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 15px }
+  .misslist div:last-child { border: 0 }
+  .misslist b { font-family: 'Lora', serif; color: var(--navy) }
+  .misslist span { color: var(--sub); text-align: right }
+</style>
+</head>
+<body>
+<main class="wrap" id="wrap">
+  <!-- 범위 고르기 -->
+  <section id="setup" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="top"><a class="back" id="homeLink" href="#">‹ 처음으로</a><span>결국, <span class="sch">○○고</span> 영어는 <b>주찬솔</b></span></div>
+    <h2>쓰면서 외우기</h2>
+    <p class="hint">뜻을 보고 영어 단어를 직접 써 보며 외워요. 따라 쓰기 → 가리고 쓰기 → 정답 확인 순서예요.</p>
+
+    <div class="sec">
+      <h3><span>범위</span><button class="link" id="allBtn" type="button">전체 선택</button></h3>
+      <div id="lessons"></div>
+    </div>
+
+    <div class="sec">
+      <h3><span>순서</span></h3>
+      <div class="seg" id="ordSeg">
+        <button type="button" data-v="seq" aria-pressed="true">순서대로</button>
+        <button type="button" data-v="shuf" aria-pressed="false">섞기</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3><span>학습할 단어</span></h3>
+      <div class="seg" id="setSeg">
+        <button type="button" data-v="all" aria-pressed="true">전체</button>
+        <button type="button" data-v="miss" aria-pressed="false" id="setMiss">몰라요만</button>
+      </div>
+    </div>
+
+    <div class="go"><button class="primary" id="startBtn" type="button" disabled>범위를 골라 주세요</button></div>
+  </section>
+
+  <!-- 쓰기 -->
+  <section id="study" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="top">
+      <button class="back" id="quitBtn" type="button">‹ 범위</button>
+      <div class="tally">
+        <span class="k" id="tK">맞음 0</span><span class="u" id="tU">틀림 0</span>
+        <button class="pen" id="penBtn" type="button" aria-pressed="false" title="켜면 펜으로만 써지고, 손바닥이 닿아도 그려지지 않아요">✏️ 펜만</button>
+      </div>
+    </div>
+    <div class="prog"><span id="pTxt">1 / 1</span><div class="bar"><i id="pBar"></i></div></div>
+    <div class="ws">
+      <div class="info">
+        <div class="tag"><span id="wTag"></span><button class="say" type="button" aria-label="발음 듣기" id="sayBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#14204a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/></g></svg></button></div>
+        <div class="steps" id="steps"><span>① 따라 쓰기</span><span>② 가리고 쓰기</span><span>③ 정답 확인</span></div>
+        <div class="ko" id="wKo"></div>
+        <div class="ex" id="wEx" hidden></div>
+        <div class="ans" id="wAns" hidden></div>
+      </div>
+      <div class="padbox">
+        <div class="pad" id="pad">
+          <canvas id="gcv"></canvas>
+          <div class="note" id="note"></div>
+          <canvas id="cv"></canvas>
+        </div>
+        <div class="tools" id="tools"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 끝 -->
+  <section id="done" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="done">
+      <div class="hint" id="dRange"></div>
+      <div class="big" id="dMsg">한 바퀴 끝!</div>
+      <div class="stats">
+        <div class="stat k"><b id="dK">0</b><span>맞았어요</span></div>
+        <div class="stat u"><b id="dU">0</b><span>틀렸어요</span></div>
+      </div>
+      <div class="misslist" id="missList" hidden></div>
+    </div>
+    <div class="col">
+      <button class="primary" id="againMiss" type="button">틀린 단어만 다시</button>
+      <button class="secondary" id="againAll" type="button">처음부터 다시</button>
+      <a class="secondary" id="quizLink" href="#">단어시험 보러 가기 ›</a>
+      <button class="secondary" id="toSetup" type="button">범위 다시 고르기</button>
+    </div>
+  </section>
+
+  <div class="loading" id="loading">단어를 불러오는 중…</div>
+  <div class="err" id="err" hidden></div>
+</main>
+
+<script src="common.js"></script>
+<script>
+(function () {
+  var KEY = PIF.param('s');
+  var LS = 'pifcards:' + KEY;            // 카드 외우기와 '몰라요' 기록을 함께 씀
+  var $ = function (id) { return document.getElementById(id); };
+  var DATA = [], RANGES = [], sel = {}, opt = { ord: 'seq', set: 'all' };
+  var deck = [], idx = 0, right = 0, wrongNow = [], step = 1, lastDeckIds = [];
+
+  $('homeLink').href = 'index.html?s=' + encodeURIComponent(KEY);
+  $('quizLink').href = 'quiz.html?s=' + encodeURIComponent(KEY);
+  var BOOK = PIF.BOOKS[KEY];
+  function setSchool(s) { document.querySelectorAll('.sch').forEach(function (e) { e.textContent = s; }); if (s) document.title = s + ' 쓰면서 외우기 · PIF'; }
+  if (BOOK) setSchool(BOOK.school);
+
+  // ---------- 저장 (이 기기에만) ----------
+  function load() { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
+  function save(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} }
+  var store = load();
+  store.miss = store.miss || {};
+  function setMiss(id, on) { var s = load(); s.miss = s.miss || {}; if (on) s.miss[id] = 1; else delete s.miss[id]; s.wlast = store.wlast; save(s); store = s; }
+  function idOf(r) { return r[0] + '|' + r[1]; }
+
+  // ---------- 데이터 (cards.html과 같은 방식) ----------
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function exHtml(ex, mode) {
+    var m = /^(.*?)\[(.+?)\](.*)$/.exec(ex);
+    if (!m) return esc(ex);
+    var mid = mode === 'blank' ? '<span class="blank">' + esc(m[2]) + '</span>' : '<mark>' + esc(m[2]) + '</mark>';
+    return esc(m[1]) + mid + esc(m[3]);
+  }
+  function lessonOf(r) { var i = r.indexOf('-'); return i > 0 ? r.slice(0, i) : r; }
+  function rangeLabel(r) {
+    var i = r.indexOf('-');
+    if (i > 0) return '지문 ' + r.slice(i + 1);
+    var m = /^P(\d+)$/.exec(r);
+    return m ? '지문 ' + m[1] : r;
+  }
+  function rangeLong(r) { var i = r.indexOf('-'); return i > 0 ? r.slice(0, i) + ' · ' + rangeLabel(r) : rangeLabel(r); }
+  function makeGroups() {
+    if (RANGES.every(function (r) { return r.indexOf('-') > 0; })) {
+      var gs = [];
+      RANGES.forEach(function (r) {
+        var l = lessonOf(r), g = gs.filter(function (x) { return x.name === l; })[0];
+        if (!g) { g = { name: l, items: [] }; gs.push(g); }
+        g.items.push(r);
+      });
+      return gs;
+    }
+    if (RANGES.length <= 16) return [{ name: '', items: RANGES.slice() }];
+    var n = Math.ceil(RANGES.length / Math.ceil(RANGES.length / 10)), out = [];
+    for (var k = 0; k < RANGES.length; k += n) {
+      var part = RANGES.slice(k, k + n);
+      out.push({ name: rangeLabel(part[0]) + ' – ' + rangeLabel(part[part.length - 1]).replace('지문 ', ''), items: part });
+    }
+    return out;
+  }
+  function refreshData(rows) {
+    DATA = rows; RANGES = [];
+    rows.forEach(function (r) { if (RANGES.indexOf(r[0]) < 0) RANGES.push(r[0]); });
+    Object.keys(sel).forEach(function (r) { if (RANGES.indexOf(r) < 0) delete sel[r]; });
+    if (!$('setup').hidden) buildSetup();
+  }
+  function start(rows) {
+    DATA = rows;
+    rows.forEach(function (r) { if (RANGES.indexOf(r[0]) < 0) RANGES.push(r[0]); });
+    var last = store.wlast || store.last || {};          // 처음이면 카드에서 고른 범위를 그대로
+    (last.sel || []).forEach(function (r) { if (RANGES.indexOf(r) >= 0) sel[r] = true; });
+    if (store.wlast && store.wlast.ord) opt.ord = store.wlast.ord;
+    $('loading').hidden = true;
+    buildSetup();
+    show('setup');
+  }
+
+  // ---------- 범위 화면 ----------
+  function buildSetup() {
+    var box = $('lessons'); box.innerHTML = '';
+    makeGroups().forEach(function (g) {
+      var wrap = document.createElement('div'); wrap.className = 'lesson';
+      if (g.name) {
+        var head = document.createElement('div'); head.className = 'ln';
+        head.innerHTML = '<span>' + esc(g.name) + '</span>';
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = g.name.indexOf('–') >= 0 ? '이 묶음 전체' : g.name + ' 전체';
+        b.onclick = function () {
+          var allOn = g.items.every(function (r) { return sel[r]; });
+          g.items.forEach(function (r) { if (allOn) delete sel[r]; else sel[r] = true; });
+          refreshSetup();
+        };
+        head.appendChild(b); wrap.appendChild(head);
+      }
+      var chips = document.createElement('div'); chips.className = 'chips';
+      var cols = [5, 4, 3].map(function (c) { return { c: c, w: (c - g.items.length % c) % c }; })
+        .sort(function (a, b) { return a.w - b.w || b.c - a.c; })[0].c;
+      chips.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
+      if (cols === 5) chips.classList.add('short');
+      g.items.forEach(function (r) {
+        var c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.r = r;
+        c.onclick = function () { if (sel[r]) delete sel[r]; else sel[r] = true; refreshSetup(); };
+        chips.appendChild(c);
+      });
+      wrap.appendChild(chips); box.appendChild(wrap);
+    });
+    segBind('ordSeg', 'ord'); segBind('setSeg', 'set');
+    $('allBtn').onclick = function () {
+      var allOn = RANGES.every(function (r) { return sel[r]; });
+      RANGES.forEach(function (r) { if (allOn) delete sel[r]; else sel[r] = true; });
+      refreshSetup();
+    };
+    refreshSetup();
+  }
+  function segBind(id, k) {
+    $(id).querySelectorAll('button').forEach(function (b) { b.onclick = function () { opt[k] = b.dataset.v; refreshSetup(); }; });
+  }
+  function missCount(r) { return DATA.filter(function (x) { return x[0] === r && store.miss[idOf(x)]; }).length; }
+  function refreshSetup() {
+    document.querySelectorAll('.chip').forEach(function (c) {
+      var r = c.dataset.r, n = missCount(r);
+      c.setAttribute('aria-pressed', sel[r] ? 'true' : 'false');
+      var lab = c.parentNode && c.parentNode.classList.contains('short') ? rangeLabel(r).replace('지문 ', '') : rangeLabel(r);
+      c.innerHTML = esc(lab) + (n ? '<span class="cnt" aria-label="몰라요 ' + n + '개">' + n + '</span>' : '');
+    });
+    var picked = RANGES.filter(function (r) { return sel[r]; });
+    $('allBtn').textContent = RANGES.every(function (r) { return sel[r]; }) ? '전체 해제' : '전체 선택';
+    var words = DATA.filter(function (x) { return sel[x[0]]; });
+    var miss = words.filter(function (x) { return store.miss[idOf(x)]; }).length;
+    $('setMiss').textContent = '몰라요만 (' + miss + ')';
+    $('setMiss').disabled = miss === 0;
+    if (miss === 0 && opt.set === 'miss') opt.set = 'all';
+    [['ordSeg', 'ord'], ['setSeg', 'set']].forEach(function (p) {
+      $(p[0]).querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === opt[p[1]] ? 'true' : 'false'); });
+    });
+    var n = opt.set === 'miss' ? miss : words.length;
+    var sb = $('startBtn');
+    sb.disabled = !picked.length || !n;
+    sb.textContent = picked.length ? n + '개 단어 쓰기 시작' : '범위를 골라 주세요';
+  }
+  $('startBtn').onclick = function () {
+    var words = DATA.filter(function (x) { return sel[x[0]]; });
+    if (opt.set === 'miss') words = words.filter(function (x) { return store.miss[idOf(x)]; });
+    var s = load(); s.wlast = { sel: Object.keys(sel), ord: opt.ord }; save(s); store = s; store.miss = store.miss || {};
+    begin(words);
+  };
+
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function begin(words) {
+    deck = opt.ord === 'shuf' ? shuffle(words) : words.slice();
+    lastDeckIds = deck.map(idOf);
+    idx = 0; right = 0; wrongNow = [];
+    show('study'); setStep(1);
+  }
+
+  // ---------- 손글씨 칸 ----------
+  // 글씨 점은 칸 크기에 대한 비율(0~1)로 기억 → 태블릿을 돌려 칸 크기가 바뀌어도 줄과 함께 따라옴
+  var cv = $('cv'), ctx = cv.getContext('2d'), strokes = [], cur = null, penOnly = false, CW = 1, CH = 1;
+  try { penOnly = localStorage.getItem('pifwrite:pen') === '1'; } catch (e) {}
+  function fitCanvas() {
+    var r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    if (!r.width) return;
+    cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+    CW = r.width; CH = r.height;
+    redraw(); drawGuide();
+  }
+  function drawStroke(s) {
+    ctx.strokeStyle = s.c; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (var i = 1; i < s.p.length; i++) {
+      var a = s.p[i - 1], b = s.p[i];
+      ctx.lineWidth = s.w * (0.55 + (b[2] || 0.5) * 0.9);   // 펜 누르는 힘에 따라 굵기
+      ctx.beginPath(); ctx.moveTo(a[0] * CW, a[1] * CH); ctx.lineTo(b[0] * CW, b[1] * CH); ctx.stroke();
+    }
+    if (s.p.length === 1) { ctx.fillStyle = s.c; ctx.beginPath(); ctx.arc(s.p[0][0] * CW, s.p[0][1] * CH, s.w / 2, 0, 7); ctx.fill(); }
+  }
+  function redraw() { ctx.clearRect(0, 0, CW, CH); strokes.forEach(drawStroke); }
+  function pt(e) { var r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height, e.pointerType === 'pen' ? (e.pressure || 0.5) : 0.5]; }
+  function allowed(e) { return !penOnly || e.pointerType === 'pen' || e.pointerType === 'mouse'; }
+  cv.addEventListener('pointerdown', function (e) {
+    if (!allowed(e)) return;
+    e.preventDefault();
+    try { cv.setPointerCapture(e.pointerId); } catch (x) {}
+    cur = { id: e.pointerId, c: step === 3 ? '#9aa0b4' : '#14204a', w: e.pointerType === 'pen' ? 3.2 : 4, p: [pt(e)] };
+    strokes.push(cur); drawStroke(cur);
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (!cur || e.pointerId !== cur.id) return;
+    e.preventDefault();
+    var evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+    if (!evs || !evs.length) evs = [e];          // 묶음 정보가 없는 기기에서도 선이 끊기지 않게
+    evs.forEach(function (ev) { cur.p.push(pt(ev)); });
+    var n = cur.p.length, s = { c: cur.c, w: cur.w, p: cur.p.slice(Math.max(0, n - evs.length - 1)) };
+    drawStroke(s);
+  });
+  function endStroke(e) { if (cur && e.pointerId === cur.id) cur = null; }
+  cv.addEventListener('pointerup', endStroke);
+  cv.addEventListener('pointercancel', endStroke);
+  function clearPad() { strokes = []; cur = null; redraw(); }
+  function undo() { strokes.pop(); redraw(); }
+  window.addEventListener('resize', function () { if (!$('study').hidden) fitCanvas(); });
+
+  function setPen(on) {
+    penOnly = on; $('penBtn').setAttribute('aria-pressed', on ? 'true' : 'false');
+    try { localStorage.setItem('pifwrite:pen', on ? '1' : '0'); } catch (e) {}
+  }
+  $('penBtn').onclick = function () { setPen(!penOnly); };
+  setPen(penOnly);
+
+  // 공책 줄(밑줄·가운데 점선)과 흐린 따라 쓰기 글씨. 글자 크기를 정한 뒤 실제 글자 높이에 줄을 맞춤
+  var gcv = $('gcv'), gctx = gcv.getContext('2d'), guideWord = '', lineWord = '';
+  function drawGuide() {
+    var r = gcv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    if (!r.width) return;
+    gcv.width = Math.round(r.width * d); gcv.height = Math.round(r.height * d);
+    gctx.setTransform(d, 0, 0, d, 0, 0);
+    var W = r.width, H = r.height, pad = 20;
+    var fs = Math.min(H * 0.4, 130);
+    var font = function (s) { return '500 ' + s + 'px Lora, Georgia, serif'; };
+    gctx.font = font(fs);
+    var w = gctx.measureText(lineWord || 'word').width;
+    if (w > W - pad * 2) { fs = Math.max(22, fs * (W - pad * 2) / w); gctx.font = font(fs); w = gctx.measureText(lineWord || 'word').width; }
+    var xh = gctx.measureText('x').actualBoundingBoxAscent || fs * 0.47;      // 소문자 x 높이 → 가운데 줄
+    var asc = gctx.measureText('l').actualBoundingBoxAscent || fs * 0.72;     // l 높이 → 윗줄
+    var base = Math.round(H * 0.5 + (asc - 0) / 2);                           // 글자 몸통이 칸 가운데쯤 오게
+    // 줄: 윗줄(연한 점선) · 가운데(점선) · 밑줄(실선)
+    gctx.lineWidth = 1.5;
+    gctx.strokeStyle = '#efe6dc'; gctx.setLineDash([6, 6]);
+    gctx.beginPath(); gctx.moveTo(pad, base - asc); gctx.lineTo(W - pad, base - asc); gctx.stroke();
+    gctx.strokeStyle = '#e2d6c8';
+    gctx.beginPath(); gctx.moveTo(pad, base - xh); gctx.lineTo(W - pad, base - xh); gctx.stroke();
+    gctx.setLineDash([]); gctx.lineWidth = 2; gctx.strokeStyle = '#d9cbbb';
+    gctx.beginPath(); gctx.moveTo(pad, base); gctx.lineTo(W - pad, base); gctx.stroke();
+    if (guideWord) {
+      gctx.fillStyle = 'rgba(20,32,74,.17)'; gctx.textBaseline = 'alphabetic';
+      gctx.fillText(guideWord, (W - w) / 2, base);
+    }
+  }
+  // 글꼴(Lora)이 늦게 받아지면 다시 그림
+  if (document.fonts && document.fonts.load) document.fonts.load('500 40px Lora').then(function () { if (!$('study').hidden) drawGuide(); }).catch(function () {});
+
+  // ---------- 단계 ----------
+  function relHtml(r) {
+    var h = '';
+    if (r[4]) h += '<div class="s"><i>=</i><span>' + esc(r[4]) + '</span></div>';
+    if (r[5]) h += '<div class="a"><i>↔</i><span>' + esc(r[5]) + '</span></div>';
+    return h ? '<div class="rel">' + h + '</div>' : '';
+  }
+  function setStep(n) {
+    step = n;
+    var r = deck[idx];
+    $('wTag').textContent = rangeLong(r[0]);
+    $('wKo').textContent = r[2];
+    var ex = r[3] ? exHtml(r[3], n === 3 ? '' : 'blank') : '';
+    $('wEx').innerHTML = ex; $('wEx').hidden = !ex;
+    $('steps').querySelectorAll('span').forEach(function (s, i) { s.className = i + 1 === n ? 'on' : (i + 1 < n ? 'ok' : ''); });
+    $('pTxt').textContent = (idx + 1) + ' / ' + deck.length;
+    $('pBar').style.width = (idx / deck.length * 100) + '%';
+    $('tK').textContent = '맞음 ' + right; $('tU').textContent = '틀림 ' + wrongNow.length;
+    // 발음은 정답을 알려 주므로 ①따라 쓰기와 ③확인 때만
+    $('sayBtn').style.visibility = n === 2 ? 'hidden' : 'visible';
+    var ans = $('wAns');
+    if (n === 3) { ans.innerHTML = '<div class="w">' + esc(r[1]) + '</div>' + relHtml(r); ans.hidden = false; } else ans.hidden = true;
+    lineWord = r[1];                       // 줄 높이는 단계와 상관없이 이 단어 크기에 맞춤
+    guideWord = n === 1 ? r[1] : '';
+    $('note').textContent = n === 1 ? '흐린 글씨를 따라 써 보세요' : n === 2 ? '뜻만 보고 기억해서 써 보세요' : '내가 쓴 글씨와 정답을 비교해 보세요';
+    var t = $('tools');
+    if (n === 1) t.innerHTML = '<button type="button" data-a="undo">↶ 되돌리기</button><button type="button" data-a="clear">지우기</button><button type="button" class="next" data-a="to2">다 썼어요 → 가리고 쓰기</button>';
+    else if (n === 2) t.innerHTML = '<button type="button" data-a="undo">↶ 되돌리기</button><button type="button" data-a="clear">지우기</button><button type="button" class="next" data-a="to3">정답 보기</button>';
+    else t.innerHTML = '<button type="button" class="no" data-a="wrong">틀렸어요</button><button type="button" class="yes" data-a="right">맞았어요</button>';
+    if (n !== 3) clearPad();
+    requestAnimationFrame(fitCanvas);
+  }
+  $('tools').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-a]'); if (!b) return;
+    var a = b.dataset.a;
+    if (a === 'undo') undo();
+    else if (a === 'clear') clearPad();
+    else if (a === 'to2') setStep(2);
+    else if (a === 'to3') setStep(3);
+    else if (a === 'right' || a === 'wrong') mark(a === 'right');
+  });
+  function mark(ok) {
+    var r = deck[idx]; if (!r) return;
+    if (ok) { right++; setMiss(idOf(r), false); } else { wrongNow.push(r); setMiss(idOf(r), true); }
+    idx++;
+    if (idx >= deck.length) { $('pBar').style.width = '100%'; setTimeout(finish, 150); }
+    else setStep(1);
+  }
+  $('quitBtn').onclick = function () { refreshSetup(); show('setup'); };
+
+  // 발음
+  var voice = null;
+  function pickVoice() {
+    if (!('speechSynthesis' in window)) return;
+    var vs = speechSynthesis.getVoices();
+    voice = vs.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0] || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
+  }
+  if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } else $('sayBtn').style.display = 'none';
+  $('sayBtn').onclick = function () {
+    var r = deck[idx]; if (!r || !('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(r[1]); u.lang = 'en-US'; u.rate = 0.9; if (voice) u.voice = voice;
+    speechSynthesis.speak(u);
+  };
+
+  // ---------- 끝 ----------
+  function finish() {
+    var u = wrongNow.length;
+    $('dK').textContent = right; $('dU').textContent = u;
+    $('dMsg').textContent = u ? '한 바퀴 끝! 틀린 단어 ' + u + '개' : '전부 맞았어요! 완벽해요';
+    $('dRange').textContent = RANGES.filter(function (r) { return sel[r]; }).map(rangeLong).join(', ');
+    var ml = $('missList');
+    if (u) { ml.innerHTML = wrongNow.map(function (r) { return '<div><b>' + esc(r[1]) + '</b><span>' + esc(r[2]) + '</span></div>'; }).join(''); ml.hidden = false; }
+    else ml.hidden = true;
+    $('againMiss').hidden = !u;
+    show('done');
+  }
+  $('againMiss').onclick = function () { begin(wrongNow.slice()); };
+  $('againAll').onclick = function () {
+    var ids = {}; lastDeckIds.forEach(function (i) { ids[i] = 1; });
+    begin(DATA.filter(function (x) { return ids[idOf(x)]; }));
+  };
+  $('toSetup').onclick = function () { refreshSetup(); show('setup'); };
+
+  function show(id) {
+    ['setup', 'study', 'done'].forEach(function (s) { $(s).hidden = s !== id; });
+    $('wrap').classList.toggle('wide', id === 'study');   // 쓰는 화면은 태블릿에서 넓게
+    window.scrollTo(0, 0);
+  }
+
+  function fail(e) {
+    $('loading').hidden = true;
+    $('err').hidden = false;
+    $('err').textContent = '단어를 불러오지 못했어요. 잠시 후 새로고침해 주세요. (' + (e && e.message ? e.message : e) + ')';
+  }
+  if (!KEY) { fail('QR 주소가 올바르지 않아요'); return; }
+  // 카드 외우기와 같은 보관본을 먼저 보여 주고, 서버의 최신 단어로 조용히 바꿈
+  var CK = 'pifcardsdata:' + KEY, shown = false;
+  try { var c = JSON.parse(localStorage.getItem(CK) || 'null'); if (c && c.rows && c.rows.length) { if (c.school) setSchool(c.school); start(c.rows); shown = true; } } catch (e) {}
+  PIF.get({ api: 'cards', key: KEY }).then(function (d) {
+    if (d.school) setSchool(d.school);
+    try { localStorage.setItem(CK, JSON.stringify({ rows: d.rows, school: d.school, t: Date.now() })); } catch (e) {}
+    if (!shown) start(d.rows);
+    else if (JSON.stringify(d.rows) !== JSON.stringify(DATA)) refreshData(d.rows);
+  }).catch(function (e) { if (!shown) fail(e); });
+})();
+</script>
+</body>
+</html>

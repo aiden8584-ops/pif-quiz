@@ -41,6 +41,7 @@
   .seg button { flex: 1; border: 0; background: transparent; font: inherit; font-size: 16px; font-weight: 700; color: var(--sub); padding: 13px 6px; border-radius: 12px; cursor: pointer }
   .seg button.on { background: var(--navy); color: #fff }
   .seg-cap { font-size: 13px; font-weight: 700; color: var(--sub); margin-bottom: -12px }
+  [hidden] { display: none !important }   /* 단어장이 하나뿐일 때 빈 '단어장 고르기' 칸이 보이지 않게 */
 </style>
 </head>
 <body>
@@ -61,13 +62,18 @@
     <span><span class="t">카드로 외우기</span><span class="s" style="display:block">눌러서 뒤집고, 모르는 단어만 다시</span></span>
     <span class="ar" aria-hidden="true">›</span>
   </a>
+  <a class="btn b2" id="toWrite" href="#">
+    <span class="ic" style="background:#eaf4f1"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#12806f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19c3-1 4-5 6-5s1 4 3 4 3-3 5-3"/><path d="M14 4l5 5-7 7H7v-5z"/></g></svg></span>
+    <span><span class="t">쓰면서 외우기</span><span class="s" style="display:block">태블릿·펜으로 따라 쓰고, 가리고 써 보기</span></span>
+    <span class="ar" aria-hidden="true">›</span>
+  </a>
   <a class="btn b2" id="toQuiz" href="#">
     <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#f15a1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></g></svg></span>
     <span><span class="t">단어시험 보기</span><span class="s" style="display:block">결과는 선생님께 자동 전송</span></span>
     <span class="ar" aria-hidden="true">›</span>
   </a>
 
-  <p class="flow">추천 순서 &nbsp;<b>종이 단어장</b> → <b>카드 복습</b> → <b>단어시험</b></p>
+  <p class="flow">추천 순서 &nbsp;<b>종이 단어장</b> → <b>카드·쓰기 복습</b> → <b>단어시험</b></p>
   <p class="foot" id="bad" hidden>QR 주소가 올바르지 않아요. 선생님께 다시 받아 주세요.</p>
   <p class="foot">Copyright © PIF English Academy</p>
 </main>
@@ -75,7 +81,7 @@
 <script>
 (function () {
   var key = PIF.param('s'), b = PIF.BOOKS[key];
-  if (!b) { document.getElementById('bad').hidden = false; document.getElementById('toCards').style.display = 'none'; document.getElementById('toQuiz').style.display = 'none'; return; }
+  if (!b) { document.getElementById('bad').hidden = false; document.getElementById('toCards').style.display = 'none'; document.getElementById('toWrite').style.display = 'none'; document.getElementById('toQuiz').style.display = 'none'; return; }
   document.getElementById('sch').textContent = b.school;
   document.title = b.school + ' 단어장 · PIF';
   var warmed = {};
@@ -83,6 +89,7 @@
     var bk = PIF.BOOKS[k];
     document.getElementById('lab').textContent = bk.label;
     document.getElementById('toCards').href = 'cards.html?s=' + encodeURIComponent(k);
+    document.getElementById('toWrite').href = 'write.html?s=' + encodeURIComponent(k);
     document.getElementById('toQuiz').href = 'quiz.html?s=' + encodeURIComponent(k);
     var bs = document.querySelectorAll('#seg button');
     for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-k') === k ? 'on' : '';
